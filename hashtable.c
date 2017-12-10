@@ -7,6 +7,40 @@
 #include <time.h>
 #include <stdlib.h>
 
+/*
+ * Hash Table can be implemented as:
+ * ** Direct Addressing
+ * ** Open Addressing
+ * ** Chaining
+ * ** Perfect Hashing
+ *
+ * Direct Addressing means, the key will be index into the hash table array.
+ * For this case, the key has to fit within the size of the array.
+ * Worst case: O(1). Avg case: O(1)
+ *
+ * For other hashing techniques, we use a hash function on top of key.
+ * new_key = hash(key). Because we do this, collision can happen and we can solve
+ * collision by three methods: Open Addressing, Chaining, Perfect Hashing
+ *
+ * Chaining: When collision happens (two keys collide to same index),
+ * we create a (doubly) linked list in that index and store the data.
+ * Inserts are very fast here. Worst case: O(n). Avg case: O(1)
+ *
+ * Open Addressing: Here the data is still stored in the hash table itself, but
+ * when collision happens, we search for the next open slot and save the data
+ * (along with key) there. Worst case: O(n). Avg case: O(1). In practice,
+ * Chaining seems to be better than Open Addressing, if the table is big and
+ * very small no. of collisions. Because, in Open Addressing, for every collision,
+ * we may end up walking the table (to find an empty slot while inserting and
+ * to search the key while searching) lots of times. I tried this in my experiment.
+ *
+ * Perfect Hashing: When collision happens, we create another hash table (secondary)
+ * at the index the collision is happening. In CLRS, it's stated that by carefully
+ * selecting the hash functions H1 (for primary table) and H2 (for secondary table)
+ * we can have O(1) worst case performance.  Worst case: O(1). Avg case: O(1)
+ *
+ */
+
 uint64_t find_max(uint64_t *arr, uint64_t count)
 {
    uint64_t i;
@@ -28,6 +62,8 @@ typedef struct HashItem {
    uint32_t key;
    bool is_key_valid;
 } HashItem;
+
+typedef struct Hash
 
 
 typedef void (*HTPrintItem) (void *);
