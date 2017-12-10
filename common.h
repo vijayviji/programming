@@ -1,6 +1,8 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
+#include <stdint.h>
+
 typedef enum ReturnStatus {
    OK = 0,
    FAIL = 1,
