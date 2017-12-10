@@ -1,50 +1,8 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <malloc.h>
-
-typedef enum ReturnStatus {
-   OK = 0,
-   FAIL = 1,
-   NO_MEM = 2
-} ReturnStatus;
-
-typedef struct ListNode {
-   void *data;
-   struct ListNode *prev;
-   struct ListNode *next;
-} ListNode;
-
-#define LIST_FOR_ALL(list, node_ptr) \
-   for (node_ptr = LIST_FIRST(list); \
-        !LIST_IS_AT_END(list, node_ptr); \
-        node_ptr = LIST_NEXT(node_ptr))
-
-// to be used when removing items in the list
-#define LIST_FOR_ALL_SAFE(list, node_ptr, next_ptr) \
-   for (node_ptr = LIST_FIRST(list), next_ptr = LIST_NEXT(LIST_FIRST(list)); \
-        !LIST_IS_AT_END(list, node_ptr); \
-        node_ptr = next_ptr, next_ptr = LIST_NEXT(next_ptr))
-
-#define LIST_FIRST(list) list->head->next
-#define LIST_LAST(list) list->head->prev
-#define LIST_NEXT(node_ptr) node_ptr->next
-
-#define LIST_IS_AT_END(list, node_ptr) (node_ptr == list->head)
-#define LIST_IS_EMPTY(list) (list->head->next == list->head)
-
-typedef void (*ListPrintData)(void *);
-
-typedef struct List {
-   ListNode *head;
-   ListPrintData print_data_fn;
-} List;
+#include "list.h"
 
 void list_insert_at_front(List *list, ListNode *node)
 {
-   ListNode *head = list->head;
-
+   ListNode *head = &list->head;
 
    node->next = head->next;
    head->next->prev = node;
@@ -55,7 +13,7 @@ void list_insert_at_front(List *list, ListNode *node)
 
 void list_insert_at_rear(List *list, ListNode *node)
 {
-   ListNode *head = list->head;
+   ListNode *head = &list->head;
 
 
    node->prev = head->prev;
@@ -63,6 +21,13 @@ void list_insert_at_rear(List *list, ListNode *node)
 
    node->next = head;
    head->prev = node;
+}
+
+void list_init_element(ListNode *node, void *data)
+{
+   node->next = NULL;
+   node->prev = NULL;
+   node->data = data;
 }
 
 ListNode * list_alloc_element(void *data)
@@ -73,10 +38,7 @@ ListNode * list_alloc_element(void *data)
       return NULL;
    }
 
-   tmp->next = NULL;
-   tmp->prev = NULL;
-   tmp->data = data;
-
+   list_init_element(tmp, data);
    return tmp;
 }
 
@@ -111,27 +73,22 @@ void list_item_free(ListNode *node, bool destroy_data)
    }
 }
 
+void list_init(List *list, ListPrintData print_data_fn)
+{
+   list->head.next = &list->head;
+   list->head.prev = &list->head;
+   list->print_data_fn = print_data_fn;
+}
+
 List * list_alloc(ListPrintData print_data_fn)
 {
    List *list = malloc(sizeof(List));
-   ListNode *head;
 
    if (!list) {
       return NULL;
    }
 
-   head = list_alloc_element((void *) NULL);
-   if (!head) {
-      free(list);
-      return NULL;
-   }
-
-   head->next = head;
-   head->prev = head;
-
-   list->head = head;
-   list->print_data_fn = print_data_fn;
-
+   list_init(list, print_data_fn);
    return list;
 }
 
@@ -164,37 +121,4 @@ void list_print(List *list)
    }
 
    printf("\n");
-}
-
-/* following for testing */
-
-void print_int(void *data) {
-   int *tmp = (int *) data;
-
-   if (tmp) {
-      printf("%d", *tmp);
-   } else {
-      printf("NULL");
-   }
-}
-
-int main()
-{
-#define MAX_ELEM 10
-
-   int a[MAX_ELEM] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, i;
-   List *list = list_alloc(print_int);
-
-   if (!list) {
-      printf("List alloc failed");
-      return 1;
-   }
-
-   for (i = 0; i < MAX_ELEM; i++) {
-      list_insert_data(list, &a[i], false);
-   }
-
-   list_print(list);
-   list_destroy(list);
-   list = NULL;
 }
