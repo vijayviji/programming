@@ -44,4 +44,34 @@ char * substring(char source[], int start, int len) {
    return target;
 }
 
+// in-place reverse.
+char * str_reverse(char *str)
+{
+   int i, len;
+   char tmp;
+
+    // calculating length of the string
+   len = strlen(str);
+
+   for(i = 0; i < len / 2; i++) {
+      tmp = str[i];
+      str[i] = str[len - i - 1];
+      str[len - i - 1] = tmp;
+   }
+
+   return str;
+}
+
+bool is_palindrome(char *s)
+{
+   int l = strlen(s), i;
+
+   for (i = 0; i < l / 2; i++) {
+      if (s[i] != s[l - i - 1]) {
+          return false;
+      }
+   }
+   return true;
+}
+
 #endif // _COMMON_H

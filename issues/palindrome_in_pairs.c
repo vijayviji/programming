@@ -13,78 +13,6 @@ typedef struct Word {
    bool is_empty_string;
 } Word;
 
-typedef int (*QSComparator)(void *item1, void *item2);
-
-
-int qs_select(void *arr, int p, int q, QSComparator qc_fn, uint32_t itemSize, void *buffer)
-{
-   int i = p - 1, j;
-   void *r = arr + (q * itemSize);
-   //void *tmp = malloc(itemSize);
-
-   // if (!tmp) {
-   //    return -10;
-   // }
-
-   for (j = p; j < q; j++) {
-      if (qc_fn(arr + (j * itemSize), r) < 0) {
-         i++;
-         memcpy(buffer, arr + (i * itemSize), itemSize);
-         memcpy(arr + (i * itemSize), arr + (j * itemSize), itemSize);
-         memcpy(arr + (j * itemSize), buffer, itemSize);
-      }
-   }
-   i++;
-   memcpy(buffer, arr + (i * itemSize), itemSize);
-   memcpy(arr + (i * itemSize), arr + (q * itemSize), itemSize);
-   memcpy(arr + (q * itemSize), buffer, itemSize);
-
-   //free(buffer);
-   return i;
-}
-
-void quicksort(void *arr, int p, int q, QSComparator qc_fn, uint32_t itemSize, void *buffer)
-{
-   int r;
-
-   if (p >= q) {
-      return;
-   }
-
-   r = qs_select(arr, p, q, qc_fn, itemSize, buffer);
-   //printf("r: %d, p:%d, q:%d\n", r, p, q);
-
-   if (r == -10) {
-      printf("memalloc failed");
-      return;
-   }
-
-   quicksort(arr, p, r - 1, qc_fn, itemSize, buffer);
-   quicksort(arr, r + 1, q, qc_fn, itemSize, buffer);
-}
-
-void * reverse(char *str)
-{
-   int i, len;
-   char tmp;
-
-    // calculating length of the string
-   len = strlen(str);
-
-   for(i = 0; i < len / 2; i++) {
-      tmp = str[i];
-      str[i] = str[len - i - 1];
-      str[len - i - 1] = tmp;
-   }
-
-   return str;
-}
-
-int qs_comparator_str(void *str1, void *str2)
-{
-   return strcmp(str1, str2);
-}
-
 void word_destroy(Word *words, int wordscount)
 {
    int j;
@@ -96,18 +24,6 @@ void word_destroy(Word *words, int wordscount)
    }
 
    free(words);
-}
-
-bool is_palindrome(char *s)
-{
-   int l = strlen(s), i;
-
-   for (i = 0; i < l / 2; i++) {
-      if (s[i] != s[l - i - 1]) {
-          return false;
-      }
-   }
-   return true;
 }
 
 Word * word_alloc_and_init(char **words, int wordscount, int *empty_string_encountered)
@@ -257,14 +173,6 @@ int** palindromePairs(char** words, int wordsSize, int** columnSizes, int* retur
 
    word_destroy(new_words, wordsSize);
    return real_return_arr;
-}
-
-// rev, ver, v
-int qs_comparator_int(void *a, void *b)
-{
-   int a1 = *(int *) a, b1 = *(int *)b;
-
-   return a1 - b1;
 }
 
 int main()

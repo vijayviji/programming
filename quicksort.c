@@ -1,60 +1,65 @@
 #include <malloc.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include "quicksort.h"
 
 
-int qs_select(int *nums, int p, int q)
+/**
+ * This function compares two objects and gives -ve or 0 or +ve values.
+ * It should do 'item1 - item2'
+ */
+
+uint64_t qs_select(void *arr,              // IN: array of objects to be sorted.
+                   uint64_t p,             // IN: start position.
+                   uint64_t q,             // IN: end position.
+                   QSComparator qc_fn,     // IN: comparator function
+                   uint32_t item_size,     // IN: size of each object in arr.
+                   void *scratch_buffer)   // IN: scratch buffer of item_size
+                                           //     size to use for temp purpose.
 {
-    int i, j = p - 1, target = nums[q], tmp;
-    
-    for (i = p; i <= q; i++) {
-        if (nums[i] < target) {
-            j++;
-            
-            tmp = nums[j];
-            nums[j] = nums[i];
-            nums[i] = tmp;
-        }
-    }
-    
-    j++;
-    tmp = nums[j];
-    nums[j] = nums[q];
-    nums[q] = tmp;
-    
-    return j;
-}
+   uint64_t i = p, j;
+   void *r = arr + (q * item_size);
 
-void quicksort(int *nums, int p, int q)
-{
-    int r;
-    
-    if (p > q) {
-        return;
-    }
-    
-    r = qs_select(nums, p, q);
-    
-    quicksort(nums, p, r - 1);
-    quicksort(nums, r + 1, q);
-}
-
-int main()
-{
-#define MAX 10
-   int *nums = malloc(sizeof(int) * MAX);
-   int tmp[MAX] = {8, 9, 4, 5, 3, 4, 2, 1, 0, 10}, i;
-
-   for (i = 0; i < MAX; i++) {
-      nums[i] = tmp[i];
+   for (j = p; j < q; j++) {
+      if (qc_fn(arr + (j * item_size), r) < 0) {
+         // swap arr[i] and arr[j]
+         memcpy(scratch_buffer, arr + (i * item_size), item_size);
+         memcpy(arr + (i * item_size), arr + (j * item_size), item_size);
+         memcpy(arr + (j * item_size), scratch_buffer, item_size);
+         i++;
+      }
    }
 
-   quicksort(nums, 0, MAX - 1);
+   // swap arr[i] and arr[q]
+   memcpy(scratch_buffer, arr + (i * item_size), item_size);
+   memcpy(arr + (i * item_size), arr + (q * item_size), item_size);
+   memcpy(arr + (q * item_size), scratch_buffer, item_size);
 
-   for (i = 0; i < MAX; i++) {
-      printf("%d ", nums[i]);  
+   return i;
+}
+
+void quicksort(void *arr,           // IN: array to be sorted
+               uint64_t p,          // IN: starting index in arr
+               uint64_t q,          // IN: ending index in arr
+               QSComparator qc_fn,  // IN: comparator fn
+               uint32_t item_size,  // IN: size of an object in arr
+               void *scratch_buffer)// IN: scratch buffer of item_size
+                                       //  size to use for temp purpose.
+{
+   uint64_t r;
+
+   if (p >= q) {
+      return;
    }
 
-   printf("\n");
+   r = qs_select(arr, p, q, qc_fn, item_size, scratch_buffer);
 
-   return 0;
+   // because we're using unsinged int, if r = 0, then r - 1 will screw up.
+   if (r != 0) {
+      quicksort(arr, p, r - 1, qc_fn, item_size, scratch_buffer);
+   }
+   //printf("r: %d, p:%d, q:%d\n", r, p, q);
+
+   quicksort(arr, r + 1, q, qc_fn, item_size, scratch_buffer);
 }
