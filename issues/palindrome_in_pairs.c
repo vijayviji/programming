@@ -112,13 +112,24 @@ int palidrome_equality(Word *word1, Word *word2)
    return 0;
 }
 
+int add_to_result(int **return_arr, int i, int j)
+{
+   static int k;
+
+   return_arr[k][0] = empty_string_idx;
+   return_arr[k][1] = i;
+   k++;
+
+   return k;
+}
+
 int** palindromePairs(char** words, int wordsSize, int** columnSizes, int* returnSize)
 {
-   int i, j = 0;
-   int return_arr[3000][2], **real_return_arr;
-   HTHandle h_table = ht_alloc(wordsSize, sdbm_str, key_alloc_fn_str,
-                               compare_key_str, compare_data_int,
-                               print_kv_int);
+   int i, j = 0, l, k = 0;
+   int return_arr[3000][2], **real_return_arr, empty_string_idx = -1;
+   HTHandle h_table = ht_alloc(wordsSize, sdbm_str_fn, key_alloc_fn_str,
+                               compare_key_str_fn, compare_data_int_fn,
+                               print_kv_int_fn);
    *returnSize = 0;
    int *tmp = NULL;
 
@@ -129,11 +140,45 @@ int** palindromePairs(char** words, int wordsSize, int** columnSizes, int* retur
    for (i = 0; i < wordsSize; i++) {
       tmp = malloc(sizeof(int));
       *tmp = i;
+      if (words[i][0] == '\0') {
+         empty_string_idx = i;
+      }
       ht_insert(h_table, words[i], tmp);
    }
 
-   ht_print(h_table);
-   return NULL;
+   for (i = 0; i < wordsSize; i++) {
+      l = strlen(words[i]);
+
+      for (j = l; j > 1; j--) {
+
+         if (j == '\0' && empty_string_idx != -1
+             && is_palindrome_ij(words[i], 0, j - 1)) {
+            k = add_to_result(words[i], i, empty_string_idx);
+            k = add_to_result(words[i], empty_string_idx, i);
+         } else {
+            tmp = ht_search(h_table, words[i][j]);
+            if (tmp != NULL && is_palindrome_ij(words[i], 0, j - 1)) {
+               k = add_to_result(words[i], *tmp, i);
+            }
+         }
+      }
+   }
+
+   *returnSize = k;
+
+   real_return_arr = malloc(sizeof(int *) * (*returnSize));
+   *columnSizes = malloc(sizeof(int) * (*returnSize));
+
+
+   for (i = 0; i < *returnSize; i++) {
+      real_return_arr[i] = malloc(sizeof(int) * 2);
+
+      (*columnSizes)[i] = 2;
+      real_return_arr[i][0] = return_arr[i][0];
+      real_return_arr[i][1] = return_arr[i][1];
+   }
+
+   return real_return_arr;
    //
    //
    // new_words = word_alloc_and_init(words, wordsSize, &empty_string_idx);
@@ -208,4 +253,41 @@ int main()
    //quicksort(s, 0, 4, qs_comparator_str, MAX_STR);
 
    return 0;
+}
+
+return 0;
+}
+;
+}
+
+}
+
+
+   return 0;
+}
+ return 0;
+}
+;
+}
+
+}
+);
+
+   return 0;
+}
+ return 0;
+}
+;
+}
+
+}
+
+
+   return 0;
+}
+ return 0;
+}
+;
+}
+
 }

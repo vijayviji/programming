@@ -62,16 +62,32 @@ static char * str_reverse(char *str)
    return str;
 }
 
+// i and j are inclusive
+static bool is_palindrome_ij(char *s, int i, int j)
+{
+   for (; i < j; i++, j--) {
+      if (s[i] != s[j]) {
+         return false;
+      }
+   }
+
+   return true;
+}
+
 static bool is_palindrome(char *s)
 {
    int l = strlen(s), i;
 
-   for (i = 0; i < l / 2; i++) {
-      if (s[i] != s[l - i - 1]) {
-          return false;
+   return is_palindrome_ij(s, 0, l - 1);
+}
+
+#endif // _COMMON_H
+if // _COMMON_H
+urn false;
       }
    }
    return true;
 }
 
 #endif // _COMMON_H
+if // _COMMON_H

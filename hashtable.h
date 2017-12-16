@@ -121,12 +121,12 @@ static uint32_t sdbm(char *str)
 
 // key and data are ints
 
-static uint32_t ht_hash_clrs_int(void *key)
+static uint32_t ht_hash_clrs_int_fn(void *key)
 {
    return ht_hash_clrs(*(int *) key);
 }
 
-static void * key_alloc_fn_int(void *key)
+static void * key_alloc_fn_int_fn(void *key)
 {
    int *int_key = (int *) key;
    int *new_key = malloc(sizeof(int));
@@ -138,21 +138,21 @@ static void * key_alloc_fn_int(void *key)
    return new_key;
 }
 
-static int compare_key_int(void *key1, void *key2)
+static int compare_key_int_fn(void *key1, void *key2)
 {
    int *intkey1 = (int *) key1, *intkey2 = (int *) key2;
 
    return *intkey1 - *intkey2;
 }
 
-static int compare_data_int(void *data1, void *data2)
+static int compare_data_int_fn(void *data1, void *data2)
 {
    int *val1 = (int *) data1, *val2 = (int *) data2;
 
    return (*val1 - *val2);
 }
 
-static void print_kv_int(void *key, void *data)
+static void print_kv_int_fn(void *key, void *data)
 {
    int *int_key = (int *) key;
    int *int_data = (int *) data;
@@ -164,7 +164,7 @@ static void print_kv_int(void *key, void *data)
 
 
 // key and data are string
-static uint32_t sdbm_str(void *key)
+static uint32_t sdbm_str_fn(void *key)
 {
    return sdbm(key);
 }
@@ -182,21 +182,21 @@ static void * key_alloc_fn_str(void *key)
    return new_key;
 }
 
-static int compare_key_str(void *key1, void *key2)
+static int compare_key_str_fn(void *key1, void *key2)
 {
    char *strkey1 = (char *) key1, *strkey2 = (char *) key2;
 
    return strcmp(strkey1, strkey2);
 }
 
-static int compare_data_str(void *data1, void *data2)
+static int compare_data_str_fn(void *data1, void *data2)
 {
    char *val1 = (char *) data1, *val2 = (char *) data2;
 
    return strcmp(val1, val2);
 }
 
-static void print_kv_str(void *key, void *data)
+static void print_kv_str_fn(void *key, void *data)
 {
    char *str_key = (char *) key;
    char *str_data = (char *) data;
