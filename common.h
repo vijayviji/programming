@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <malloc.h>
+#include <assert.h>
 
 typedef enum ReturnStatus {
    OK = 0,
@@ -62,6 +63,21 @@ static char * str_reverse(char *str)
    return str;
 }
 
+// copies and then reverses.
+static char * str_reverse_cpy(char *str)
+{
+   int i, len;
+   char tmp;
+   char *ret;
+
+   len = strlen(str);
+   ret = malloc(len + 1);
+   assert(ret != NULL);
+   strcpy(ret, str);
+
+   return str_reverse(ret);
+}
+
 // i and j are inclusive
 static bool is_palindrome_ij(char *s, int i, int j)
 {
@@ -82,12 +98,3 @@ static bool is_palindrome(char *s)
 }
 
 #endif // _COMMON_H
-if // _COMMON_H
-urn false;
-      }
-   }
-   return true;
-}
-
-#endif // _COMMON_H
-if // _COMMON_H
