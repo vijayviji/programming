@@ -116,6 +116,94 @@ static uint32_t sdbm(char *str)
 
     return hash;
 }
+
+
+
+// key and data are ints
+
+static uint32_t ht_hash_clrs_int(void *key)
+{
+   return ht_hash_clrs(*(int *) key);
+}
+
+static void * key_alloc_fn_int(void *key)
+{
+   int *int_key = (int *) key;
+   int *new_key = malloc(sizeof(int));
+
+   if (new_key) {
+      memcpy(new_key, int_key, sizeof(int));
+   }
+
+   return new_key;
+}
+
+static int compare_key_int(void *key1, void *key2)
+{
+   int *intkey1 = (int *) key1, *intkey2 = (int *) key2;
+
+   return *intkey1 - *intkey2;
+}
+
+static int compare_data_int(void *data1, void *data2)
+{
+   int *val1 = (int *) data1, *val2 = (int *) data2;
+
+   return (*val1 - *val2);
+}
+
+static void print_kv_int(void *key, void *data)
+{
+   int *int_key = (int *) key;
+   int *int_data = (int *) data;
+
+   printf("%d, %d", *int_key, *int_data);
+}
+
+
+
+
+// key and data are string
+static uint32_t sdbm_str(void *key)
+{
+   return sdbm(key);
+}
+
+static void * key_alloc_fn_str(void *key)
+{
+   char *strkey = (char *) key;
+   uint32_t len = strlen(strkey);
+   char *new_key = malloc(len + 1);
+
+   if (new_key) {
+      memcpy(new_key, strkey, len + 1);
+   }
+
+   return new_key;
+}
+
+static int compare_key_str(void *key1, void *key2)
+{
+   char *strkey1 = (char *) key1, *strkey2 = (char *) key2;
+
+   return strcmp(strkey1, strkey2);
+}
+
+static int compare_data_str(void *data1, void *data2)
+{
+   char *val1 = (char *) data1, *val2 = (char *) data2;
+
+   return strcmp(val1, val2);
+}
+
+static void print_kv_str(void *key, void *data)
+{
+   char *str_key = (char *) key;
+   char *str_data = (char *) data;
+
+   printf("%s, %s", str_key, str_data);
+}
+
 /*
  * Hash functions Above
  */

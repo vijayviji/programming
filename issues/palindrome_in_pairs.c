@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "../common.h"
+#include "../hashtable.h"
 
 typedef struct Word {
    char *word;
@@ -61,7 +62,7 @@ Word * word_alloc_and_init(char **words, int wordscount, int *empty_string_encou
       }
 
       new_words[i * 2 + 1].index = i;
-      strcpy(new_words[i * 2 + 1].word, reverse(words[i]));
+      strcpy(new_words[i * 2 + 1].word, str_reverse(words[i]));
       new_words[i * 2 + 1].is_reversed = true;
       new_words[i * 2 + 1].is_palindrome = is_palindrome(new_words[i * 2 + 1].word);
       new_words[i * 2 + 1].is_empty_string = (new_words[i * 2 + 1].word[0] == '\0');
@@ -114,65 +115,80 @@ int palidrome_equality(Word *word1, Word *word2)
 int** palindromePairs(char** words, int wordsSize, int** columnSizes, int* returnSize)
 {
    int i, j = 0;
-   Word *new_words, buffer;
    int return_arr[3000][2], **real_return_arr;
-   int empty_string_idx = -1;
-
+   HTHandle h_table = ht_alloc(wordsSize, sdbm_str, key_alloc_fn_str,
+                               compare_key_str, compare_data_int,
+                               print_kv_int);
    *returnSize = 0;
+   int *tmp = NULL;
 
-   new_words = word_alloc_and_init(words, wordsSize, &empty_string_idx);
-   if (!new_words) {
+   if (!h_table) {
       return NULL;
    }
 
-   quicksort(new_words, 0, wordsSize * 2 - 1, qs_comparator_word, sizeof(Word), &buffer);
-
-   for (i = 0;  i < 2 * wordsSize; i++) {
-      if (!palidrome_equality(&new_words[i], &new_words[i + 1]) &&
-          new_words[i].index != new_words[i + 1].index) {
-         (*returnSize)++;
-         if (new_words[i].is_reversed) {
-            return_arr[j][0] = new_words[i + 1].index;
-            return_arr[j][1] = new_words[i].index;
-            printf("[%d, %d]\n", new_words[i + 1].index, new_words[i].index);
-         } else {
-            return_arr[j][1] = new_words[i + 1].index;
-            return_arr[j][0] = new_words[i].index;
-            printf("[%d, %d]\n", new_words[i].index, new_words[i + 1].index);
-         }
-         j++;
-      }
-
-      if (empty_string_idx != -1 && !new_words[i].is_empty_string &&
-          new_words[i].is_palindrome) {
-          (*returnSize)++;
-          if (new_words[i].is_reversed) {
-             return_arr[j][0] = new_words[i].index;
-             return_arr[j][1] = empty_string_idx;
-             printf("[%d, %d]\n", new_words[i].index, empty_string_idx);
-          } else {
-             return_arr[j][0] = empty_string_idx;
-             return_arr[j][1] = new_words[i].index;
-             printf("[%d, %d]\n", empty_string_idx, new_words[i].index);
-          }
-         j++;
-      }
+   for (i = 0; i < wordsSize; i++) {
+      tmp = malloc(sizeof(int));
+      *tmp = i;
+      ht_insert(h_table, words[i], tmp);
    }
 
-   real_return_arr = malloc(sizeof(int *) * (*returnSize));
-   *columnSizes = malloc(sizeof(int) * (*returnSize));
-
-
-   for (i = 0; i < *returnSize; i++) {
-      real_return_arr[i] = malloc(sizeof(int) * 2);
-
-      (*columnSizes)[i] = 2;
-      real_return_arr[i][0] = return_arr[i][0];
-      real_return_arr[i][1] = return_arr[i][1];
-   }
-
-   word_destroy(new_words, wordsSize);
-   return real_return_arr;
+   ht_print(h_table);
+   return NULL;
+   //
+   //
+   // new_words = word_alloc_and_init(words, wordsSize, &empty_string_idx);
+   // if (!new_words) {
+   //    return NULL;
+   // }
+   //
+   // quicksort(new_words, 0, wordsSize * 2 - 1, qs_comparator_word, sizeof(Word), &buffer);
+   //
+   // for (i = 0;  i < 2 * wordsSize; i++) {
+   //    if (!palidrome_equality(&new_words[i], &new_words[i + 1]) &&
+   //        new_words[i].index != new_words[i + 1].index) {
+   //       (*returnSize)++;
+   //       if (new_words[i].is_reversed) {
+   //          return_arr[j][0] = new_words[i + 1].index;
+   //          return_arr[j][1] = new_words[i].index;
+   //          printf("[%d, %d]\n", new_words[i + 1].index, new_words[i].index);
+   //       } else {
+   //          return_arr[j][1] = new_words[i + 1].index;
+   //          return_arr[j][0] = new_words[i].index;
+   //          printf("[%d, %d]\n", new_words[i].index, new_words[i + 1].index);
+   //       }
+   //       j++;
+   //    }
+   //
+   //    if (empty_string_idx != -1 && !new_words[i].is_empty_string &&
+   //        new_words[i].is_palindrome) {
+   //        (*returnSize)++;
+   //        if (new_words[i].is_reversed) {
+   //           return_arr[j][0] = new_words[i].index;
+   //           return_arr[j][1] = empty_string_idx;
+   //           printf("[%d, %d]\n", new_words[i].index, empty_string_idx);
+   //        } else {
+   //           return_arr[j][0] = empty_string_idx;
+   //           return_arr[j][1] = new_words[i].index;
+   //           printf("[%d, %d]\n", empty_string_idx, new_words[i].index);
+   //        }
+   //       j++;
+   //    }
+   // }
+   //
+   // real_return_arr = malloc(sizeof(int *) * (*returnSize));
+   // *columnSizes = malloc(sizeof(int) * (*returnSize));
+   //
+   //
+   // for (i = 0; i < *returnSize; i++) {
+   //    real_return_arr[i] = malloc(sizeof(int) * 2);
+   //
+   //    (*columnSizes)[i] = 2;
+   //    real_return_arr[i][0] = return_arr[i][0];
+   //    real_return_arr[i][1] = return_arr[i][1];
+   // }
+   //
+   // word_destroy(new_words, wordsSize);
+   // return real_return_arr;
 }
 
 int main()
@@ -186,8 +202,6 @@ int main()
    for (i = 0; i < MAX_STR; i++) {
       words[i] = malloc(200);
       strcpy(words[i], s[i]);
-      //snprintf(words[i], 10, "asdfaf%d", i);
-      //printf("%p - %s\n", words[i], words[i]);
    }
 
    palindromePairs(words, MAX_STR, &columnSizes, &returnSize);

@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+/**
+ * This function should compare two objects and give -ve or 0 or +ve values.
+ * It should do 'item1 - item2'
+ */
 typedef int (*QSComparator)(void *item1, void *item2);
 
 static int qs_comparator_str(void *str1, void *str2)

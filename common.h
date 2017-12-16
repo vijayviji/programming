@@ -27,7 +27,7 @@ static uint64_t find_max(uint64_t *arr, uint64_t count)
    return max;
 }
 
-char * substring(char source[], int start, int len) {
+static char * substring(char source[], int start, int len) {
    int i = start;
 
    char *target = malloc(len);
@@ -45,7 +45,7 @@ char * substring(char source[], int start, int len) {
 }
 
 // in-place reverse.
-char * str_reverse(char *str)
+static char * str_reverse(char *str)
 {
    int i, len;
    char tmp;
@@ -62,7 +62,7 @@ char * str_reverse(char *str)
    return str;
 }
 
-bool is_palindrome(char *s)
+static bool is_palindrome(char *s)
 {
    int l = strlen(s), i;
 

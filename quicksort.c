@@ -5,11 +5,6 @@
 #include "quicksort.h"
 
 
-/**
- * This function compares two objects and gives -ve or 0 or +ve values.
- * It should do 'item1 - item2'
- */
-
 uint64_t qs_select(void *arr,              // IN: array of objects to be sorted.
                    uint64_t p,             // IN: start position.
                    uint64_t q,             // IN: end position.
