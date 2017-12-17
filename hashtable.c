@@ -56,14 +56,14 @@
 
 void ht_print_stats(HTHandle h)
 {
-   printf("HashTable: search_hits - %u, search_misses - %u,"
-          " search_list_walks - %u, bloom_filter_saves - %u,"
-          " searches - %u, inserts - %u\n",
+   printf("HashTable: search_hits - %lu, search_misses - %lu,"
+          " search_list_walks - %lu, bloom_filter_saves - %lu,"
+          " searches - %lu, inserts - %lu\n",
           h->stats.search_hits, h->stats.search_misses,
           h->stats.search_list_walks, h->stats.bloom_filter_saves,
           h->stats.searches, h->stats.inserts);
 
-   printf("Max collided elemetns in a row: %d\n",
+   printf("Max collided elemetns in a row: %lu\n",
           find_max(h->stats.collisions, h->num_buckets));
 }
 

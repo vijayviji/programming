@@ -30,6 +30,12 @@ void list_init_element(ListNode *node, void *data)
    node->data = data;
 }
 
+void list_make_element_self_ref(ListNode *node)
+{
+   node->next = node;
+   node->prev = node;
+}
+
 ListNode * list_alloc_element(void *data)
 {
    ListNode *tmp = malloc(sizeof(ListNode));
@@ -63,6 +69,17 @@ void list_item_unlink(ListNode *node)
 {
    node->prev->next = node->next;
    node->next->prev = node->prev;
+}
+
+void list_items_link(ListNode *node1, ListNode *node2)
+{
+   ListNode *node1Next = node1->next, *node2Prev = node2->prev;
+
+   node1->next = node2;
+   node1Next->prev = node2Prev;
+
+   node2->prev = node1;
+   node2Prev->next = node1Next;
 }
 
 void list_item_free(ListNode *node, bool destroy_data)
